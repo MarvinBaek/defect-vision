@@ -8,7 +8,7 @@ const ResultScreen = () => {
   const [detailPressed, setDetailPressed] = useState(false);
 
   const [result, setResult] = useState({
-    status: false,
+    status: true,
     percentage: 76,
     defectType: 'Scratch',
     defectPosition: {
@@ -30,7 +30,7 @@ const ResultScreen = () => {
       <header>
         <img
           src={markcloud}
-          width={'145px'}
+          width={'130px'}
           onClick={() => navigate('/')}
           style={{ cursor: 'pointer' }}
         />
