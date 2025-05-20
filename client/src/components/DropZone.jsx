@@ -22,6 +22,7 @@ const DropZone = ({ loading }) => {
 
   return (
     <div>
+      {/* 파일 업로드, 드래그앤드랍 박스 */}
       {images.length === 0 && !loading && (
         <div className={`dropzone ${isDragActive ? 'dropzone-active' : ''}`} {...getRootProps()}>
           <input {...getInputProps()} />
@@ -31,6 +32,7 @@ const DropZone = ({ loading }) => {
           </div>
         </div>
       )}
+      {/* 업로드된 이미지 파일 미리보기 */}
       {images.length > 0 && !loading && (
         <div className='preview-area'>
           {images.map((file, index) => (
@@ -40,6 +42,7 @@ const DropZone = ({ loading }) => {
           ))}
         </div>
       )}
+      {/* 로딩시 스켈레톤 로딩 페이지 */}
       {loading && (
         <div className='loading-container'>
           <div className='skeleton-box'></div>

@@ -1,3 +1,4 @@
+/* 헤더 */
 header {
   position: fixed;
   top: 0;
@@ -41,6 +42,7 @@ header {
   color: #333333;
 }
 
+/* 드랍존 필드 */
 .dropzone {
   width: 400px;
   height: 400px;
@@ -72,6 +74,7 @@ header {
   color: #666666;
 }
 
+/* 업로드 사진 미리보기 필드 */
 .preview-area {
   display: flex;
   flex-wrap: wrap;

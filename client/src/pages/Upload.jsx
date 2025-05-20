@@ -8,7 +8,7 @@ const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 예측 처리 흉내: 2초 대기
+  // 예측 처리 흉내: 2초 대기 (api로 변경 필요)
   const handlePredict = async () => {
     setLoading(true);
     await new Promise((res) => setTimeout(res, 2000));

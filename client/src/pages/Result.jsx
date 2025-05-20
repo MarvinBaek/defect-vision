@@ -18,11 +18,12 @@ const ResultScreen = () => {
     }
   });
 
+  // 추론 상세 토글 핸들러
   const handleToggle = () => {
     setDetailPressed((prev) => !prev);
   };
 
-  // 예측 불러오는 API 필요 (상태 변경 필요)
+  // @TODO : 예측 결과 불러오는 API 필요 (상태 변경 필요)
 
   return (
     <div className='container'>
@@ -35,11 +36,14 @@ const ResultScreen = () => {
         />
       </header>
       <div className='body'>
+        {/* 추론 이후 사진 프리뷰 */}
         <div className='preview-area'>
           <div className='image-preview'>
             <img />
           </div>
         </div>
+
+        {/* 추론 결과 버튼 */}
         <Button onClick={handleToggle} outline>
           <span>
             {' '}
@@ -50,6 +54,8 @@ const ResultScreen = () => {
             (Predicted: {result.status ? 'OK' : 'Defective'})
           </span>
         </Button>
+
+        {/* 추론 결과 상세 */}
         {detailPressed && (
           <div className='detail'>
             <span>추론결과</span>
