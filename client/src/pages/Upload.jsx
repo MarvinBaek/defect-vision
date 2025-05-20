@@ -21,7 +21,7 @@ const UploadScreen = () => {
       <header>
         <img
           src={markcloud}
-          width={'145px'}
+          width={'130px'}
           onClick={() => navigate('/')}
           style={{ cursor: 'pointer' }}
         />

@@ -12,6 +12,7 @@ header {
   box-sizing: border-box;
   background-color: white;
   z-index: 1000;
+  padding: 10px;
 }
 
 .file-button {
