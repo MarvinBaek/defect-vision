@@ -1,0 +1,22 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 580px;
+  padding: 14px 20px;
+  background-color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  border: 1px solid #d1d1d1;
+  border-radius: 8px;
+}
+
+.status-ok {
+  color: green;
+  font-weight: bold;
+}
+
+.status-bad {
+  color: red;
+  font-weight: bold;
+}
