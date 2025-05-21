@@ -6,19 +6,21 @@ import { useImage } from '../context/ImageContext';
 const DropZone = ({ loading, pressed }) => {
   const { image, setImage } = useImage();
 
+  // 이미지 파일 드롭 시 미리보기 URL 생성 후 상태에 저장
   const onDrop = useCallback((acceptedFiles) => {
     const previewFiles = acceptedFiles.map((file) =>
       Object.assign(file, {
-        preview: URL.createObjectURL(file)
+        preview: URL.createObjectURL(file) // 브라우저 전용 미리보기용 blob URL 생성
       })
     );
-    setImage(previewFiles);
+    setImage(previewFiles); // Context에 이미지 배열 저장 (단일 파일도 배열 형태)
   }, []);
 
+  // react-dropzone 설정: 이미지 파일만 허용, 단일 파일만 드래그 가능
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] },
-    multiple: false
+    accept: { 'image/*': [] }, // 모든 이미지 포맷 허용 (jpg, png 등)
+    multiple: false // 단일 파일만 허용
   });
 
   return (
