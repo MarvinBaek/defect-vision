@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import ic_download from '../assets/ic_download.svg';
+import { useImage } from '../context/ImageContext';
 
-const DropZone = ({ loading }) => {
-  const [images, setImages] = useState([]);
+const DropZone = ({ loading, pressed }) => {
+  const { image, setImage } = useImage();
 
   const onDrop = useCallback((acceptedFiles) => {
     const previewFiles = acceptedFiles.map((file) =>
@@ -11,7 +12,7 @@ const DropZone = ({ loading }) => {
         preview: URL.createObjectURL(file)
       })
     );
-    setImages(previewFiles);
+    setImage(previewFiles);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -23,8 +24,13 @@ const DropZone = ({ loading }) => {
   return (
     <div>
       {/* 파일 업로드, 드래그앤드랍 박스 */}
-      {images.length === 0 && !loading && (
-        <div className={`dropzone ${isDragActive ? 'dropzone-active' : ''}`} {...getRootProps()}>
+      {image.length === 0 && !loading && (
+        <div
+          className={`dropzone ${isDragActive ? 'dropzone-active' : ''} ${
+            pressed ? 'dropzone-block' : ''
+          }`}
+          {...getRootProps()}
+        >
           <input {...getInputProps()} />
           <div className='dropzone-content'>
             <img src={ic_download} />
@@ -33,9 +39,9 @@ const DropZone = ({ loading }) => {
         </div>
       )}
       {/* 업로드된 이미지 파일 미리보기 */}
-      {images.length > 0 && !loading && (
+      {image.length > 0 && !loading && (
         <div className='preview-area'>
-          {images.map((file, index) => (
+          {image.map((file, index) => (
             <div key={index} className='image-preview'>
               <img src={file.preview} alt='preview' />
             </div>

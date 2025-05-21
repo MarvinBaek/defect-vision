@@ -1,29 +1,37 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import markcloud from '../assets/markcloud.png';
 import Button from '../components/Button';
 import { useState } from 'react';
+import { useImage } from '../context/ImageContext';
 
 const ResultScreen = () => {
   const navigate = useNavigate();
   const [detailPressed, setDetailPressed] = useState(false);
+  const { setImage } = useImage();
+  const location = useLocation();
+  const { image, metadata } = location.state || {};
 
-  const [result, setResult] = useState({
-    status: true,
-    percentage: 76,
-    defectType: 'Scratch',
-    defectPosition: {
-      x: 226,
-      y: 223,
-      z: 227
-    }
-  });
+  // 데이터 없을 경우
+  if (!image || !metadata) {
+    return (
+      <div className='body'>
+        <p>데이터가 없습니다. 메인 페이지로 돌아가세요.</p>
+        <Button
+          onClick={() => {
+            setImage([]);
+            navigate('/');
+          }}
+        >
+          메인으로
+        </Button>
+      </div>
+    );
+  }
 
   // 추론 상세 토글 핸들러
   const handleToggle = () => {
     setDetailPressed((prev) => !prev);
   };
-
-  // @TODO : 예측 결과 불러오는 API 필요 (상태 변경 필요)
 
   return (
     <div className='container'>
@@ -31,7 +39,10 @@ const ResultScreen = () => {
         <img
           src={markcloud}
           width={'130px'}
-          onClick={() => navigate('/')}
+          onClick={() => {
+            setImage([]);
+            navigate('/');
+          }}
           style={{ cursor: 'pointer' }}
         />
       </header>
@@ -39,7 +50,10 @@ const ResultScreen = () => {
         {/* 추론 이후 사진 프리뷰 */}
         <div className='preview-area'>
           <div className='image-preview'>
-            <img />
+            <img
+              src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+              alt='preview'
+            />
           </div>
         </div>
 
@@ -48,10 +62,10 @@ const ResultScreen = () => {
           <span>
             {' '}
             상태:{' '}
-            <span className={result.status ? 'status-ok' : 'status-bad'}>
-              {result.status ? '정상' : '불량'}
+            <span className={metadata.status ? 'status-ok' : 'status-bad'}>
+              {metadata.status ? '정상' : '불량'}
             </span>{' '}
-            (Predicted: {result.status ? 'OK' : 'Defective'})
+            (Predicted: {metadata.status ? 'OK' : 'Defective'})
           </span>
         </Button>
 
@@ -65,22 +79,29 @@ const ResultScreen = () => {
                 <span>
                   {' '}
                   판별 결과:{' '}
-                  <span className={result.status ? 'status-ok' : 'status-bad'}>
-                    {result.status ? '정상' : '불량'}
+                  <span className={metadata.status ? 'status-ok' : 'status-bad'}>
+                    {metadata.status ? '정상' : '불량'}
                   </span>{' '}
-                  ({result.status ? 'OK' : 'Defective'})
+                  ({metadata.status ? 'OK' : 'Defective'})
                 </span>
               </li>
-              <li>판별 확률: {result.percentage}%</li>
-              <li>불량 유형: {result.defectType}</li>
+              <li>판별 확률: {metadata.percentage}%</li>
+              <li>불량 유형: {metadata.defectType}</li>
               <li>
-                불량 위치: ({result.defectPosition.x},{result.defectPosition.y},
-                {result.defectPosition.z})
+                불량 위치: ({metadata.defectPosition.x},{metadata.defectPosition.y},
+                {metadata.defectPosition.z})
               </li>
             </ul>
           </div>
         )}
-        <Button onClick={() => navigate('/')}>다시하기</Button>
+        <Button
+          onClick={() => {
+            setImage([]);
+            navigate('/');
+          }}
+        >
+          다시하기
+        </Button>
       </div>
     </div>
   );
