@@ -1,6 +1,6 @@
 # MarkCloud Defect Detection Platform
 
-AI 기반의 이미지 불량 인식 시스템의 MVP입니다.  
+AI(Yolov8) 기반의 이미지 불량 인식 시스템의 MVP입니다.  
 사용자는 이미지를 업로드하면, 서버에 연결된 AI 모델을 통해 부품 정상/불량 여부를 예측받을 수 있습니다.
 
 ---
@@ -17,8 +17,8 @@ AI 기반의 이미지 불량 인식 시스템의 MVP입니다.
 
 | Frontend     | Backend | ML Model |
 | ------------ | ------- | -------- |
-| React (Vite) | TBD     | TBD      |
-| JavaScript   | TBD     | TBD      |
+| React (Vite) | FastAPI | Yolov8   |
+| JavaScript   |         |          |
 
 ---
 
@@ -36,7 +36,8 @@ npm run dev
 
 ```bash
 cd server
-...
+pip install -r requirements.txt
+uvicorn main:server --reload
 ```
 
 ---
