@@ -33,6 +33,16 @@ const ResultScreen = () => {
     setDetailPressed((prev) => !prev);
   };
 
+  // base64 이미지 다운로드 핸들러
+  const handleDownload = (base64Data, filename = 'image.jpg') => {
+    const link = document.createElement('a');
+    link.href = `data:image/jpeg;base64,${base64Data}`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className='container'>
       <header>
@@ -87,6 +97,14 @@ const ResultScreen = () => {
                 </span>
               </li>
               <li>판별 확률: {metadata.percentage}%</li>
+              <li style={{ cursor: 'pointer' }}>
+                <span
+                  onClick={() => handleDownload(image)}
+                  style={{ color: 'blue', textDecoration: 'underline' }}
+                >
+                  파일 다운로드
+                </span>
+              </li>
             </ul>
           </div>
         )}
