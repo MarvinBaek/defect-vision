@@ -51,8 +51,9 @@ const ResultScreen = () => {
         <div className='preview-area'>
           <div className='image-preview'>
             <img
-              src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+              src={`data:image/jpeg;base64,${image}`}
               alt='preview'
+              style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }}
             />
           </div>
         </div>
@@ -62,10 +63,10 @@ const ResultScreen = () => {
           <span>
             {' '}
             상태:{' '}
-            <span className={metadata.status ? 'status-ok' : 'status-bad'}>
-              {metadata.status ? '정상' : '불량'}
+            <span className={metadata.status ? 'status-bad' : 'status-ok'}>
+              {metadata.status ? '불량' : '정상'}
             </span>{' '}
-            (Predicted: {metadata.status ? 'OK' : 'Defective'})
+            (Predicted: {metadata.status ? 'Defective' : 'OK'})
           </span>
         </Button>
 
@@ -79,18 +80,13 @@ const ResultScreen = () => {
                 <span>
                   {' '}
                   판별 결과:{' '}
-                  <span className={metadata.status ? 'status-ok' : 'status-bad'}>
-                    {metadata.status ? '정상' : '불량'}
+                  <span className={metadata.status ? 'status-bad' : 'status-ok'}>
+                    {metadata.status ? '불량' : '정상'}
                   </span>{' '}
-                  ({metadata.status ? 'OK' : 'Defective'})
+                  ({metadata.status ? 'Defective' : 'OK'})
                 </span>
               </li>
               <li>판별 확률: {metadata.percentage}%</li>
-              <li>불량 유형: {metadata.defectType}</li>
-              <li>
-                불량 위치: ({metadata.defectPosition.x},{metadata.defectPosition.y},
-                {metadata.defectPosition.z})
-              </li>
             </ul>
           </div>
         )}

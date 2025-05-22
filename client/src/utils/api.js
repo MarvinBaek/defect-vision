@@ -11,7 +11,7 @@ export const analyzeImage = async (imageFile) => {
     const formData = new FormData();
     formData.append('file', imageFile);
 
-    const response = await axios.post('/api/analyze', formData);
+    const response = await axios.post('/api/predict/image/', formData);
 
     const { resultImage, metadata } = response.data;
 
