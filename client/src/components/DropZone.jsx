@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import ic_download from '../assets/ic_download.svg';
 import { useImage } from '../context/ImageContext';
+import LoadingSkeleton from './LoadingSkeleton';
 
 const DropZone = ({ loading, pressed }) => {
   const { image, setImage } = useImage();
@@ -52,9 +53,7 @@ const DropZone = ({ loading, pressed }) => {
       )}
       {/* 로딩시 스켈레톤 로딩 페이지 */}
       {loading && (
-        <div className='loading-container'>
-          <div className='skeleton-box'></div>
-        </div>
+        <LoadingSkeleton />
       )}
     </div>
   );
