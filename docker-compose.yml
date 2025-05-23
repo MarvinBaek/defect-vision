@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+    restart: always
+
+  client:
+    build:
+      context: ./client
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    restart: always
