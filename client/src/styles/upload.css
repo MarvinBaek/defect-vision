@@ -61,9 +61,16 @@ header {
   border-color: #007bff;
 }
 
+/* 드래그앤드랍시 색깔 변경 */
 .dropzone-active {
   background-color: #f0f8ff;
   border-color: #007bff;
+}
+
+/* 이미지 없을시 드랍존 색깔 변경 */
+.dropzone-block {
+  background-color: #fafafa;
+  border-color: #dc3545;
 }
 
 .dropzone-content {
