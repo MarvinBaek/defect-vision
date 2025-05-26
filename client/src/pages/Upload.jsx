@@ -3,7 +3,7 @@ import DropZone from '../components/DropZone';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useImage } from '../context/ImageContext';
-import { analyzeImage } from '../utils/api';
+import { analyzeImage, analyzeVideo } from '../utils/api';
 import Header from '../components/Header';
 import TypeButton from '../components/TypeButton';
 
@@ -19,16 +19,19 @@ const UploadScreen = () => {
   const handlePredict = async () => {
     try {
       setLoading(true);
-      const { resultImage, metadata } = await analyzeImage(image[0]);
-      await new Promise((res) => setTimeout(res, 2000));
-
-      // 변수 변경 필요
-      navigate('/result', {
-        state: {
-          image: resultImage,
-          metadata: metadata
-        }
-      });
+      if (activeTab === 'video') {
+        await analyzeVideo(image[0]);
+        navigate('/videoresult');
+      } else {
+        const { resultImage, metadata } = await analyzeImage(image[0]);
+        await new Promise((res) => setTimeout(res, 2000));
+        navigate('/result', {
+          state: {
+            image: resultImage,
+            metadata: metadata
+          }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -42,7 +45,7 @@ const UploadScreen = () => {
           <TypeButton type='image' activeTab={activeTab} setActiveTab={setActiveTab} />
           <TypeButton type='video' activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <DropZone loading={loading} pressed={pressed} />
+        <DropZone loading={loading} pressed={pressed} activeTab={activeTab} />
         <Button
           onClick={() => {
             if (image.length > 0) {
