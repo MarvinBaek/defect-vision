@@ -6,7 +6,7 @@ server = FastAPI(title="자동차 부품 불량 판별 AI", description="YOLOv8 
 
 server.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # 프론트엔드 주소
+    allow_origins=["*"],  # 프론트엔드 주소
     allow_credentials=True,
     allow_methods=["*"],  # GET, POST, PUT 등 모든 메서드 허용
     allow_headers=["*"],  # Authorization 등 모든 헤더 허용
