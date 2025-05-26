@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import markcloud from '../assets/markcloud.png';
 import DropZone from '../components/DropZone';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useImage } from '../context/ImageContext';
 import { analyzeImage } from '../utils/api';
+import Header from '../components/Header';
+import TypeButton from '../components/TypeButton';
 
 const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const [activeTab, setActiveTab] = useState('image');
   const navigate = useNavigate();
 
-  const { image, setImage } = useImage();
+  const { image } = useImage();
 
   // 예측 api 호출 핸들러
   const handlePredict = async () => {
@@ -34,18 +36,12 @@ const UploadScreen = () => {
 
   return (
     <div className='container'>
-      <header>
-        <img
-          src={markcloud}
-          width={'130px'}
-          onClick={() => {
-            setImage([]);
-            navigate('/');
-          }}
-          style={{ cursor: 'pointer' }}
-        />
-      </header>
+      <Header />
       <div className='body'>
+        <div className='type-select-zone'>
+          <TypeButton type='image' activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TypeButton type='video' activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
         <DropZone loading={loading} pressed={pressed} />
         <Button
           onClick={() => {

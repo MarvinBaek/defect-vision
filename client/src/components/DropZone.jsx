@@ -20,7 +20,10 @@ const DropZone = ({ loading, pressed }) => {
   // react-dropzone 설정: 이미지 파일만 허용, 단일 파일만 드래그 가능
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] }, // 모든 이미지 포맷 허용 (jpg, png 등)
+    accept: {
+      'image/*': [], // 이미지
+      'video/*': [] // 영상
+    },
     multiple: false // 단일 파일만 허용
   });
 
@@ -41,20 +44,29 @@ const DropZone = ({ loading, pressed }) => {
           </div>
         </div>
       )}
-      {/* 업로드된 이미지 파일 미리보기 */}
+      {/* 업로드 후 이미지 또는 영상 미리보기 */}
       {image.length > 0 && !loading && (
         <div className='preview-area'>
           {image.map((file, index) => (
-            <div key={index} className='image-preview'>
-              <img src={file.preview} alt='preview' />
+            <div key={index} className='file-preview'>
+              {file.type.startsWith('image/') ? (
+                <img src={file.preview} alt='preview' />
+              ) : file.type.startsWith('video/') ? (
+                <video
+                  src={file.preview}
+                  controls
+                  width='100%'
+                  style={{ maxHeight: '300px', borderRadius: '10px' }}
+                />
+              ) : (
+                <p>지원하지 않는 파일 형식입니다</p>
+              )}
             </div>
           ))}
         </div>
       )}
       {/* 로딩시 스켈레톤 로딩 페이지 */}
-      {loading && (
-        <LoadingSkeleton />
-      )}
+      {loading && <LoadingSkeleton />}
     </div>
   );
 };
