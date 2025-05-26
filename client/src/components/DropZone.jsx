@@ -4,8 +4,9 @@ import ic_download from '../assets/ic_download.svg';
 import { useImage } from '../context/ImageContext';
 import LoadingSkeleton from './LoadingSkeleton';
 
-const DropZone = ({ loading, pressed }) => {
+const DropZone = ({ loading, pressed, activeTab }) => {
   const { image, setImage } = useImage();
+  const acceptTypes = activeTab === 'image' ? { 'image/*': [] } : { 'video/*': [] };
 
   // 이미지 파일 드롭 시 미리보기 URL 생성 후 상태에 저장
   const onDrop = useCallback((acceptedFiles) => {
@@ -20,10 +21,7 @@ const DropZone = ({ loading, pressed }) => {
   // react-dropzone 설정: 이미지 파일만 허용, 단일 파일만 드래그 가능
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/*': [], // 이미지
-      'video/*': [] // 영상
-    },
+    accept: acceptTypes,
     multiple: false // 단일 파일만 허용
   });
 

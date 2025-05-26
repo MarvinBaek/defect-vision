@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import markcloud from '../assets/markcloud.png';
 import Button from '../components/Button';
 import { useState } from 'react';
 import { useImage } from '../context/ImageContext';
+import Header from '../components/Header';
 
 const ResultScreen = () => {
   const navigate = useNavigate();
@@ -45,17 +45,7 @@ const ResultScreen = () => {
 
   return (
     <div className='container'>
-      <header>
-        <img
-          src={markcloud}
-          width={'130px'}
-          onClick={() => {
-            setImage([]);
-            navigate('/');
-          }}
-          style={{ cursor: 'pointer' }}
-        />
-      </header>
+      <Header />
       <div className='body'>
         {/* 추론 이후 사진 프리뷰 */}
         <div className='preview-area'>
