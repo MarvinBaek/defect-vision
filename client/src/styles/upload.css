@@ -78,6 +78,14 @@
   border: 1px solid #ccc;
 }
 
+.image-preview video {
+  width: 500px;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
 .type-select-zone {
   display: flex;
   flex-direction: row;

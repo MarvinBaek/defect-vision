@@ -40,6 +40,17 @@ header > span {
   gap: 20px;
 }
 
+/* 전체화면 레이아웃 */
+.body-full {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 20px;
+}
+
 /* 로딩 필드 */
 .loading-container {
   display: flex;
@@ -91,6 +102,7 @@ header > span {
 /* 기본 버튼 */
 .common-button-normal {
   width: 100%;
+  min-width: 620px;
   max-width: 620px;
   padding: 14px 20px;
   background-color: #3c8fef;
@@ -132,7 +144,15 @@ header > span {
   transform: translateY(-2px);
 }
 
-/* 추론 결과 버튼 */
+.rotatable {
+  transition: transform 0.3s ease-in-out;
+}
+
+.rotated {
+  transform: rotate(90deg);
+}
+
+/* 이미지, 동영상 선택 버튼 */
 .type-button {
   display: flex;
   align-items: center;
@@ -157,6 +177,7 @@ header > span {
   transform: translateY(-2px);
 }
 
+/* 선택 버튼 비활성화 시 */
 .type-button-disabled {
   display: flex;
   align-items: center;

@@ -13,11 +13,38 @@
 }
 
 .status-ok {
-  color: green;
+  color: #32d700;
   font-weight: bold;
 }
 
 .status-bad {
-  color: red;
+  color: #ff0000;
   font-weight: bold;
+}
+
+.video-result-field {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.video-container {
+  position: relative;
+  width: 640px;
+  margin: 40px auto;
+}
+
+.marker-overlay {
+  position: absolute;
+  top: 300px; /* 비디오 위에 적당히 띄움 */
+  transform: translateX(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: red;
+  z-index: 10;
+  transition: transform 0.2s;
+}
+
+.marker-overlay:hover {
+  transform: translateX(-50%) scale(1.2);
 }

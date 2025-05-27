@@ -1,6 +1,6 @@
 import detail from '../assets/ic_right arrow.png';
 
-const Button = ({ onClick, children, outline = false, disabled }) => {
+const Button = ({ onClick, children, outline = false, disabled, detailPressed }) => {
   const className = outline ? 'common-button-outline' : 'common-button-normal';
 
   return (
@@ -8,7 +8,7 @@ const Button = ({ onClick, children, outline = false, disabled }) => {
       {outline ? (
         <button className={className} onClick={onClick}>
           {children}
-          <img src={detail} />
+          <img src={detail} className={`rotatable ${detailPressed ? 'rotated' : ''}`} />
         </button>
       ) : (
         <button className={className} onClick={onClick} disabled={disabled}>

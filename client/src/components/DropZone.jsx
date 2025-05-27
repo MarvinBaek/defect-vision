@@ -54,7 +54,7 @@ const DropZone = ({ loading, pressed, activeTab }) => {
                   src={file.preview}
                   controls
                   width='100%'
-                  style={{ maxHeight: '300px', borderRadius: '10px' }}
+                  style={{ maxHeight: '400px', borderRadius: '10px' }}
                 />
               ) : (
                 <p>지원하지 않는 파일 형식입니다</p>

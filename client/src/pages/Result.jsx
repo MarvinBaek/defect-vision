@@ -59,7 +59,7 @@ const ResultScreen = () => {
         </div>
 
         {/* 추론 결과 버튼 */}
-        <Button onClick={handleToggle} outline>
+        <Button onClick={handleToggle} outline detailPressed={detailPressed}>
           <span>
             {' '}
             상태:{' '}

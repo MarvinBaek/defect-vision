@@ -14,6 +14,7 @@ const Header = () => {
         onClick={() => {
           setImage([]);
           navigate('/');
+          window.location.reload();
         }}
         style={{ cursor: 'pointer' }}
       />

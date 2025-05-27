@@ -5,6 +5,7 @@ import NotFound from './pages/NotFound';
 import './App.css';
 import { ImageProvider } from './context/ImageContext';
 import VideoResultScreen from './pages/VideoResult';
+import VideoContainer from './components/VideoCotainer';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path='/' element={<UploadScreen />} />
           <Route path='/result' element={<ResultScreen />} />
           <Route path='/videoresult' element={<VideoResultScreen />} />
+          <Route path='/videotest' element={<VideoContainer />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>
