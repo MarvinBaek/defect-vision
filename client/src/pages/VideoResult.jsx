@@ -38,12 +38,7 @@ const VideoResultScreen = () => {
         {/* 추론 이후 사진 프리뷰 */}
         <div className='preview-area'>
           <div className='image-preview'>
-            <img
-              src='http://localhost:8000/predict/stream'
-              alt='video stream'
-              width='100%'
-              style={{ maxHeight: '400px', borderRadius: '10px' }}
-            />
+            <img src='http://localhost:8000/predict/stream' alt='video stream' width='100%' />
           </div>
         </div>
         {/* 추론 결과 필드 */}

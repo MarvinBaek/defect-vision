@@ -46,7 +46,7 @@ const DropZone = ({ loading, pressed, activeTab }) => {
       {image.length > 0 && !loading && (
         <div className='preview-area'>
           {image.map((file, index) => (
-            <div key={index} className='file-preview'>
+            <div key={index} className='image-preview'>
               {file.type.startsWith('image/') ? (
                 <img src={file.preview} alt='preview' />
               ) : file.type.startsWith('video/') ? (
