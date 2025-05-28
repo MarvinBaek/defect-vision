@@ -69,6 +69,10 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
     """
     done_flag_path = output_path + ".done"
     log_path = "output/annotated.log"
+
+    # output 폴더가 없으면 생성
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
     
     # 임시 파일 경로 (avi 확장자, XVID 코덱 사용)
     temp_output_path = output_path.replace(".mp4", "_temp.avi")
@@ -146,8 +150,3 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
 
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(defect_intervals, f, ensure_ascii=False, indent=2)
-
-    try:
-        os.remove(input_path)
-    except Exception:
-        pass
