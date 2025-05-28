@@ -1,37 +1,131 @@
-<form id="uploadForm" enctype="multipart/form-data">
-  <input type="file" name="file" accept="video/*" />
-  <button type="submit">업로드</button>
-</form>
-<img id="resultImg" alt="스트리밍 결과" />
+<h3>📁 CCTV 영상 선택</h3>
+<select id="cctvSelect">
+  <option value="">-- CCTV 영상 선택 --</option>
+</select>
+<button id="startAnalysisBtn">분석 시작</button>
+
+<h3>📡 스트리밍 중</h3>
+<img id="streaming" alt="스트리밍 결과" style="display:none; max-width: 100%; border: 1px solid #ccc;" />
+
+<video id="resultVideo" controls style="display:none; max-width:100%;">
+  <source id="resultSource" type="video/mp4" />
+  브라우저가 video 태그를 지원하지 않습니다.
+</video>
+
+<h3>📋 불량 구간 로그</h3>
+<div id="logContainer" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: auto;">
+  <!-- 여기 로그가 표시됩니다 -->
+</div>
 
 <script>
-  const form = document.getElementById('uploadForm');
-  const img = document.getElementById('resultImg');
+  const API_BASE = "http://localhost:8000";
 
-  form.onsubmit = async (e) => {
-    e.preventDefault();
+  const cctvSelect = document.getElementById('cctvSelect');
+  const startBtn = document.getElementById('startAnalysisBtn');
+  const img = document.getElementById('streaming');
+  const resultVideo = document.getElementById('resultVideo');
+  const resultSource = document.getElementById('resultSource');
+  const logContainer = document.getElementById('logContainer');
 
-    const fileInput = form.querySelector('input[type="file"]');
-    if (!fileInput.files.length) {
-      alert("파일을 선택하세요");
+  let pollingInterval = null;
+
+  // 📁 CCTV 파일 목록 로드
+  window.onload = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/cctv/files`);
+      const data = await res.json();
+
+      if (data.files && Array.isArray(data.files)) {
+        data.files.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file;
+          option.textContent = file;
+          cctvSelect.appendChild(option);
+        });
+      } else {
+        alert('CCTV 파일 목록을 불러오는 데 실패했습니다.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('CCTV 파일 목록 요청 중 오류가 발생했습니다.');
+    }
+  };
+
+  // ▶️ 분석 시작
+  startBtn.onclick = async () => {
+    const selectedFile = cctvSelect.value;
+    if (!selectedFile) {
+      alert("분석할 CCTV 파일을 선택하세요.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    // 중복 실행 방지
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      pollingInterval = null;
+    }
 
-    // 1) 영상 업로드
-    const uploadRes = await fetch('http://localhost:8000/predict/upload', {
-      method: 'POST',
-      body: formData
-    });
+    // 초기화
+    resultVideo.style.display = 'none';
+    logContainer.innerHTML = '';
+    img.style.display = 'block';
+    const timestamp = Date.now();
+    img.src = `${API_BASE}/stream/cctv_video?filename=${encodeURIComponent(selectedFile)}&t=${timestamp}`;
 
-    if (!uploadRes.ok) {
-      alert("업로드 실패");
+    // 분석 요청
+    try {
+      const res = await fetch(`${API_BASE}/predict/cctv_video`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: selectedFile })
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert(`분석 시작 실패: ${error.detail || res.statusText}`);
+        return;
+      }
+    } catch (err) {
+      console.error(err);
+      alert('분석 요청 중 오류가 발생했습니다.');
       return;
     }
 
-    // 2) 업로드 성공하면 img src를 GET 스트리밍 주소로 변경
-    img.src = 'http://localhost:8000/predict/stream';
+    // 상태 확인 폴링
+    pollingInterval = setInterval(async () => {
+      try {
+        const statusRes = await fetch(`${API_BASE}/predict/status`);
+        const status = await statusRes.json();
+
+        if (status.done) {
+          clearInterval(pollingInterval);
+          pollingInterval = null;
+
+          img.style.display = 'none';
+
+          resultSource.src = `${API_BASE}/predict/result`;
+          resultVideo.style.display = 'block';
+          resultVideo.load();
+          resultVideo.play();
+
+          if (Array.isArray(status.logs) && status.logs.length > 0) {
+            logContainer.innerHTML = '';
+            status.logs.forEach(interval => {
+              if (Array.isArray(interval) && interval.length === 2) {
+                const p = document.createElement('p');
+                p.textContent = `${interval[0].toFixed(2)}초 ~ ${interval[1].toFixed(2)}초`;
+                logContainer.appendChild(p);
+              }
+            });
+          } else {
+            logContainer.textContent = '불량 구간이 감지되지 않았습니다.';
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        clearInterval(pollingInterval);
+        alert('상태 확인 중 오류가 발생했습니다.');
+      }
+    }, 1000);
   };
 </script>
