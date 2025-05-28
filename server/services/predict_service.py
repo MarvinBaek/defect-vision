@@ -2,23 +2,26 @@ import base64
 from ultralytics import YOLO
 import cv2
 import numpy as np
-import tempfile
-from fastapi import UploadFile
-import time
+import os
+import json
 
-# YOLO 모델 초기화
+# YOLO 모델 초기화 (weights/best.pt 경로에 모델 파일이 있어야 함)
 model = YOLO("weights/best.pt")
 
+DEFAULT_OUTPUT_SIZE = (500, 400)
+
+
 def predict_image(image_bytes: bytes):
-    # 이미지 디코딩
+    """
+    이미지 바이트를 받아 YOLO 모델로 예측 수행 후,
+    결과 이미지(base64)와 예측 상태 및 확률을 반환
+    """
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # 예측
     results = model(img)
     boxes = results[0].boxes
 
-    # 객체가 감지된 경우: 박스 이미지와 확률 반환
     if boxes and len(boxes) > 0:
         best_box = boxes[0]
         conf = float(best_box.conf[0].item())
@@ -29,61 +32,96 @@ def predict_image(image_bytes: bytes):
 
         return img_base64, {"status": True, "percentage": round(conf * 100, 2)}
     
-    # 감지된 객체가 없을 경우: 원본 이미지 반환
+    # 감지된 객체 없으면 원본 이미지 반환
     _, buffer = cv2.imencode(".jpg", img)
     img_base64 = base64.b64encode(buffer).decode("utf-8")
-    
     return img_base64, {"status": False, "percentage": 0}
 
 
-def gen_frames(video_path: str):
+def gen_frames(video_path: str, output_size=DEFAULT_OUTPUT_SIZE):
+    """
+    YOLO 모델로 분석한 프레임을 MJPEG 스트림으로 생성
+    """
     cap = cv2.VideoCapture(video_path)
-    fps = cap.get(cv2.CAP_PROP_FPS) or 30
-    delay = 1 / fps
 
     while cap.isOpened():
-        success, frame = cap.read()
-        if not success:
+        ret, frame = cap.read()
+        if not ret:
             break
 
         results = model(frame)
         boxes = results[0].boxes
+        annotated = results[0].plot() if boxes else frame
+        annotated = cv2.resize(annotated, output_size)
 
-        if boxes and len(boxes) > 0:
-            # 불량 박스가 있으면, 박스가 그려진 프레임 리턴
-            annotated_frame = results[0].plot()
-        else:
-            # 불량 없으면 원본 프레임 리턴
-            annotated_frame = frame
-
-        _, buffer = cv2.imencode('.jpg', annotated_frame)
-        frame_bytes = buffer.tobytes()
-
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-
-        time.sleep(delay)
+        _, buffer = cv2.imencode('.jpg', annotated)
+        yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n'
 
     cap.release()
 
+def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_OUTPUT_SIZE):
+    """
+    입력 영상을 YOLO로 분석하여 주석 처리된 영상을 저장하고,
+    불량 구간을 로그 파일에 기록한 뒤 원본 영상을 삭제함.
+    """
+    done_flag_path = output_path + ".done"
+    log_path = "output/annotated.log"
 
+    cap = cv2.VideoCapture(input_path)
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30
+    fourcc = cv2.VideoWriter_fourcc(*'H264')
+    out = cv2.VideoWriter(output_path, fourcc, fps, output_size)
 
-# def gen_frames_from_memory(video_file):
-#     # 메모리 임시파일에 업로드 파일 저장
-#     with tempfile.NamedTemporaryFile(delete=True, suffix=".mp4") as temp:
-#         temp.write(video_file.file.read())
-#         temp.flush()
+    if not out.isOpened():
+        print("VideoWriter를 열 수 없습니다.")
+        cap.release()
+        return
 
-#         cap = cv2.VideoCapture(temp.name)
-#         while cap.isOpened():
-#             success, frame = cap.read()
-#             if not success:
-#                 break
+    defect_intervals = []
+    in_defect = False
+    defect_start = None
 
-#             results = model(frame)
-#             annotated_frame = results[0].plot()
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-#             _, buffer = cv2.imencode(".jpg", annotated_frame)
-#             frame_bytes = buffer.tobytes()
+        frame_num = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+        time_sec = frame_num / fps
 
-#             yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
-#         cap.release()
+        results = model(frame)
+        boxes = results[0].boxes
+        is_defect = bool(boxes)
+
+        if is_defect:
+            if not in_defect:
+                in_defect = True
+                defect_start = time_sec
+            annotated = results[0].plot()
+            if not isinstance(annotated, np.ndarray):
+                annotated = cv2.cvtColor(np.array(annotated), cv2.COLOR_RGB2BGR)
+        else:
+            if in_defect:
+                in_defect = False
+                defect_intervals.append((defect_start, time_sec))
+            annotated = frame
+
+        annotated = cv2.resize(annotated, output_size)
+        out.write(annotated)
+
+    if in_defect:
+        defect_intervals.append((defect_start, time_sec))
+
+    cap.release()
+    out.release()
+
+    with open(done_flag_path, "w") as f:
+        f.write("done")
+
+    with open(log_path, "w", encoding="utf-8") as f:
+        json.dump(defect_intervals, f, ensure_ascii=False, indent=2)
+
+    try:
+        os.remove(input_path)
+    except Exception:
+        pass
