@@ -1,4 +1,4 @@
-import { IoCheckmarkCircle, IoSearch } from 'react-icons/io5';
+import { IoCheckmarkCircle, IoPlayCircleOutline, IoSearch } from 'react-icons/io5';
 import { useImage } from '../context/ImageContext';
 import { useEffect, useState } from 'react';
 import { getVideoList } from '../utils/api';
@@ -24,7 +24,6 @@ const VideoList = () => {
     <>
       <div className='video-list-header'>
         <span>비디오 선택</span>
-        <IoSearch size='24' />
       </div>
       <div className='video-list-container'>
         <div className='video-list'>
@@ -33,7 +32,9 @@ const VideoList = () => {
           ) : (
             videoList.map((video, index) => (
               <div key={index} className='video-item' onClick={() => handleVideoSelect(video)}>
-                <div className='video-thumbnail' />
+                <div className='video-thumbnail'>
+                  <IoPlayCircleOutline size='30' />
+                </div>
                 <div className='video-item-contents'>
                   <span>{video}</span>
                   <IoCheckmarkCircle size='24' color={image[0] === video ? '#3C8FEF' : '#ccc'} />
