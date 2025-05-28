@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import os
 import json
+import subprocess
+
 
 # YOLO 모델 초기화 (weights/best.pt 경로에 모델 파일이 있어야 함)
 model = YOLO("weights/best.pt")
@@ -63,17 +65,18 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
     """
     입력 영상을 YOLO로 분석하여 주석 처리된 영상을 저장하고,
     불량 구간을 로그 파일에 기록한 뒤 원본 영상을 삭제함.
+    FFmpeg로 최종 mp4 (H264) 인코딩을 수행.
     """
     done_flag_path = output_path + ".done"
     log_path = "output/annotated.log"
-
-    # output 폴더가 없으면 생성
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
-
+    
+    # 임시 파일 경로 (avi 확장자, XVID 코덱 사용)
+    temp_output_path = output_path.replace(".mp4", "_temp.avi")
+    
     cap = cv2.VideoCapture(input_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    out = cv2.VideoWriter(output_path, fourcc, fps, output_size)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # 임시 저장용 코덱
+    out = cv2.VideoWriter(temp_output_path, fourcc, fps, output_size)
 
     if not out.isOpened():
         print("VideoWriter를 열 수 없습니다.")
@@ -117,6 +120,26 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
 
     cap.release()
     out.release()
+
+    # FFmpeg로 avi -> mp4 변환
+    ffmpeg_cmd = [
+        "ffmpeg", "-y",
+        "-i", temp_output_path,
+        "-c:v", "libx264",
+        "-preset", "fast",
+        "-crf", "23",
+        "-movflags", "+faststart",
+        output_path
+    ]
+
+    try:
+        subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        print("FFmpeg 변환 실패:", e.stderr.decode())
+
+    # 임시 avi 파일 삭제
+    if os.path.exists(temp_output_path):
+        os.remove(temp_output_path)
 
     with open(done_flag_path, "w") as f:
         f.write("done")
