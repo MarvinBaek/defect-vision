@@ -33,10 +33,9 @@ export const analyzeImage = async (imageFile) => {
 
 export const analyzeVideo = async (videoFile) => {
   try {
-    const formData = new FormData();
-    formData.append('file', videoFile);
-
-    const response = await axios.post('/api/predict/upload', formData);
+    const response = await axios.post('api/predict/cctv_video', {
+      filename: videoFile
+    });
     return response.data;
   } catch (error) {
     console.error('영상 판별 중 오류:', error);
@@ -44,16 +43,32 @@ export const analyzeVideo = async (videoFile) => {
   }
 };
 
-/**
- * 서버에서 판별 결과를 가져온다.
- * @returns {Promise<{ resultVideo: string }>}
- */
-export const getPredictionResult = async () => {
+export const getVideoList = async () => {
   try {
-    const response = await axios.get('/api/predict/result');
-    return response.data; // { ready: true }
+    const response = await axios.get('api/cctv/files');
+    return response.data.files;
   } catch (error) {
-    console.error('결과 상태 확인 중 오류:', error);
-    return { ready: false };
+    console.error('영상 목록 불러오기 실패:', error);
+    throw error;
+  }
+};
+
+export const getAnalyzeStatus = async () => {
+  try {
+    const response = await axios.get('api/predict/status');
+    return response.data;
+  } catch (error) {
+    console.error('영상 분석 불러오기 실패:', error);
+    throw error;
+  }
+};
+
+export const getAnalyzedVideoFile = async () => {
+  try {
+    const response = await axios.get('api/predict/result');
+    return response.data;
+  } catch (error) {
+    console.error('분석 완료된 영상 불러오기 실패:', error);
+    throw error;
   }
 };

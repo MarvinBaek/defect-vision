@@ -22,6 +22,7 @@ const UploadScreen = () => {
       setLoading(true);
       if (activeTab === 'video') {
         await analyzeVideo(image[0]);
+        console.log('분석 요청 보냄', image[0]);
         navigate('/videoresult');
       } else {
         const { resultImage, metadata } = await analyzeImage(image[0]);
