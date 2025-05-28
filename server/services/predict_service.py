@@ -67,6 +67,9 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
     done_flag_path = output_path + ".done"
     log_path = "output/annotated.log"
 
+    # output 폴더가 없으면 생성
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
     cap = cv2.VideoCapture(input_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
     fourcc = cv2.VideoWriter_fourcc(*'H264')
