@@ -6,6 +6,7 @@ import { useImage } from '../context/ImageContext';
 import { analyzeImage, analyzeVideo } from '../utils/api';
 import Header from '../components/Header';
 import TypeButton from '../components/TypeButton';
+import VideoList from '../components/VideoList';
 
 const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,11 @@ const UploadScreen = () => {
           <TypeButton type='image' activeTab={activeTab} setActiveTab={setActiveTab} />
           <TypeButton type='video' activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <DropZone loading={loading} pressed={pressed} activeTab={activeTab} />
+        {activeTab === 'video' ? (
+          <VideoList />
+        ) : (
+          <DropZone loading={loading} pressed={pressed} activeTab={activeTab} />
+        )}
         <Button
           onClick={() => {
             if (image.length > 0) {

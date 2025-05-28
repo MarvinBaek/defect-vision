@@ -19,8 +19,8 @@ header > span {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-weight: 500;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 23px;
 }
 
 .container {
