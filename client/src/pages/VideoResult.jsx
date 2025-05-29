@@ -166,6 +166,11 @@ const VideoResultScreen = () => {
           <Button
             onClick={() => {
               setImage([]);
+              setDone(false);
+              setStatusLog([]);
+              setAnalyzedVideo(null);
+              setCurrentTime(0);
+              setDetailPressed(false);
               navigate('/');
               window.location.reload();
             }}
