@@ -70,8 +70,14 @@ def save_annotated_video(input_path: str, output_path: str, output_size=DEFAULT_
     done_flag_path = output_path + ".done"
     log_path = "output/annotated.log"
 
-    # output 폴더가 없으면 생성
+    
+    # ✅ output 폴더가 없으면 생성 + 내부 파일 모두 삭제
+    output_dir = os.path.dirname(log_path)
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    for filename in os.listdir(output_dir):
+        file_path = os.path.join(output_dir, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
     
     # 임시 파일 경로 (avi 확장자, XVID 코덱 사용)
