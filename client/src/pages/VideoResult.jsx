@@ -20,15 +20,17 @@ const VideoResultScreen = () => {
   // 영상 시간 포맷팅 (*분 *초) 핸들러
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60)
-      .toString()
-      .padStart(2, '0');
+    const seconds = Math.floor(time % 60);
     return `${minutes}분 ${seconds}초`;
   };
 
   // 추론 상세 토글 핸들러
   const handleToggle = () => {
     setDetailPressed((prev) => !prev);
+  };
+
+  const handleTimeWarp = (seconds) => {
+    videoRef.current.currentTime = seconds;
   };
 
   // 영상 시간 불량 구간 진입 여부 확인
@@ -53,7 +55,7 @@ const VideoResultScreen = () => {
 
     const pollStatus = async () => {
       if (attempts >= 50 || done) {
-        console.warn('⛔ Polling 중단');
+        console.warn('Polling 중단');
         return;
       }
 
@@ -154,10 +156,20 @@ const VideoResultScreen = () => {
               <span>추론결과</span>
               <ul>
                 <li>불량 부품 갯수: {statusLog.length}개</li>
-                <li>불량 부품 구간:</li>
-                {statusLog.map((range, index) => (
-                  <li key={index}>{range[0].toFixed(2)}초</li>
-                ))}
+                <li>
+                  불량 부품 구간:
+                  <ul>
+                    {statusLog.map((range, index) => (
+                      <li
+                        key={index}
+                        onClick={() => handleTimeWarp((range[0] + 0.01).toFixed(2))}
+                        className='defect-time'
+                      >
+                        {range[0].toFixed(2)}초
+                      </li>
+                    ))}
+                  </ul>
+                </li>
               </ul>
             </div>
           )}
