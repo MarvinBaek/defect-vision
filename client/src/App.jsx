@@ -4,6 +4,7 @@ import ResultScreen from './pages/Result';
 import NotFound from './pages/NotFound';
 import './App.css';
 import { ImageProvider } from './context/ImageContext';
+import VideoResultScreen from './pages/VideoResult';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path='/' element={<UploadScreen />} />
           <Route path='/result' element={<ResultScreen />} />
+          <Route path='/videoresult' element={<VideoResultScreen />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>

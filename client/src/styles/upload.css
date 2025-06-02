@@ -1,21 +1,3 @@
-/* 헤더 */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  background-color: white;
-  z-index: 1000;
-  padding: 10px;
-}
-
 .file-button {
   display: flex;
   flex-direction: row;
@@ -94,4 +76,10 @@ header {
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #ccc;
+}
+
+.type-select-zone {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }

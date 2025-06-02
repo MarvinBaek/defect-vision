@@ -1,32 +1,37 @@
 import { useState } from 'react';
-import markcloud from '../assets/markcloud.png';
 import DropZone from '../components/DropZone';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useImage } from '../context/ImageContext';
-import { analyzeImage } from '../utils/api';
+import { analyzeImage, analyzeVideo } from '../utils/api';
+import Header from '../components/Header';
+import TypeButton from '../components/TypeButton';
 
 const UploadScreen = () => {
   const [loading, setLoading] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const [activeTab, setActiveTab] = useState('image');
   const navigate = useNavigate();
 
-  const { image, setImage } = useImage();
+  const { image } = useImage();
 
   // 예측 api 호출 핸들러
   const handlePredict = async () => {
     try {
       setLoading(true);
-      const { resultImage, metadata } = await analyzeImage(image[0]);
-      await new Promise((res) => setTimeout(res, 2000));
-
-      // 변수 변경 필요
-      navigate('/result', {
-        state: {
-          image: resultImage,
-          metadata: metadata
-        }
-      });
+      if (activeTab === 'video') {
+        await analyzeVideo(image[0]);
+        navigate('/videoresult');
+      } else {
+        const { resultImage, metadata } = await analyzeImage(image[0]);
+        await new Promise((res) => setTimeout(res, 2000));
+        navigate('/result', {
+          state: {
+            image: resultImage,
+            metadata: metadata
+          }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -34,19 +39,13 @@ const UploadScreen = () => {
 
   return (
     <div className='container'>
-      <header>
-        <img
-          src={markcloud}
-          width={'130px'}
-          onClick={() => {
-            setImage([]);
-            navigate('/');
-          }}
-          style={{ cursor: 'pointer' }}
-        />
-      </header>
+      <Header />
       <div className='body'>
-        <DropZone loading={loading} pressed={pressed} />
+        <div className='type-select-zone'>
+          <TypeButton type='image' activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TypeButton type='video' activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+        <DropZone loading={loading} pressed={pressed} activeTab={activeTab} />
         <Button
           onClick={() => {
             if (image.length > 0) {
