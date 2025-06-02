@@ -1,6 +1,3 @@
-weights/
-*.pt
-
 # Logs
 logs
 *.log
